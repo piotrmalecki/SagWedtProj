@@ -7,6 +7,7 @@ import akka.io.IO
 import com.sag.config.Configuration
 import com.sag.Rest.RestServiceActor
 import spray.can.Http
+import com.sag.Rest.StartMessage
 
 object Boot extends App with Configuration {
 
@@ -15,7 +16,9 @@ object Boot extends App with Configuration {
 
   // create and start rest service actor
   val restService = system.actorOf(Props[RestServiceActor], "rest-endpoint")
+ // restService ! StartMessage
 
   // start HTTP server with rest service actor as a handler
   IO(Http) ! Http.Bind(restService, serviceHost, servicePort)
+  //restService ! StartMessage
 }

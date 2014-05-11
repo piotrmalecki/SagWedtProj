@@ -63,8 +63,8 @@ class ProfilDAO extends Configuration {
     }
   }
   
-  def search(params: SearchModel): Either[Failure, List[Profil]] = {
-    implicit val typeMapper = Profiles.dateTypeMapper
+  def search(params: SearchModel): Either[Failure,List[Profil]] = {
+   // implicit val typeMapper = Profiles.dateTypeMapper
 
     try {
       db.withSession {
@@ -75,13 +75,15 @@ class ProfilDAO extends Configuration {
            params.wyszukiwanie.map(profil.wyszukiwanie is _),
            params.ip.map(profil.ip is _)
           ).flatten match {
-            case Nil => ConstColumn.TRUE
-            case seq => seq.reduce(_ && _)
+            case Nil => 
+              ConstColumn.TRUE
+            case seq => 
+              seq.reduce(_ && _)
           }
         }
         } yield profil
 
-        Right(query.run.toList)
+       Right(query.run.toList)
       }
     } catch {
       case e: SQLException =>
@@ -89,6 +91,36 @@ class ProfilDAO extends Configuration {
     }
   }
   
+  def makeProfil(listProfils:Either[Failure,List[Profil]]): Either[Failure,List[Profil]] ={
+    
+   // var newList = List[Profil]
+	// var ll = List[Map[Int,Profil]]()
+   //listProfils.foreach( item => {
+     
+   //  var count = item.czasOgladania.get
+   //  if(item.czyKupil.get) count = count *4 ;
+  //   if(item.czyPrzeczytal.get) count = count *3 ;
+  ///   if(item.czyWKarcie.get) count = count *2 ;
+  //   ll ::= Map (count -> item) 
+  // } )
+
+try{
+  Right(listProfils.right.get.sortWith((p1, p2) => 
+  getCount(p1) > getCount(p2)))
+}
+catch{
+      case e: SQLException =>
+        Left(databaseError(e))
+   }
+  }
+  
+  def getCount(profil: Profil): Int = {
+  var count = profil.czasOgladania.get
+  if(profil.czyKupil.get) count = count *4 
+  if(profil.czyPrzeczytal.get) count = count *3 
+  if(profil.czyWKarcie.get) count = count *2 
+  count
+}
    /**
    * Produce database error description.
    *

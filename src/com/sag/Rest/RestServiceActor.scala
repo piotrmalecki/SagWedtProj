@@ -12,15 +12,25 @@ import scala.Some
 import spray.http._
 import spray.httpx.unmarshalling._
 import spray.routing._
+import akka.actor.Props
 
 /**
  * REST Service actor.
+
  */
+
+case object StartMessage
+case object ProfilWorker
 class RestServiceActor extends Actor with RestService {
 
   implicit def actorRefFactory = context
 
   def receive = runRoute(rest)
+  val workerRouter = context.actorOf( Props[Pong], name = "workerRouter")
+
+    //{
+    //case StartMessage => runRoute(rest)
+     //}
 }
 
 /**
@@ -62,13 +72,17 @@ trait RestService extends HttpService with SLF4JLogging {
         }
       } ~
         get {
+        
           parameters('ip.as[String] ?, 'kategoria.as[String] ?, 'wyszukiwanie.as[String] ?).as(SearchModel) {
+            
             searchParameters: SearchModel => {
               ctx: RequestContext =>
                 handleRequest(ctx) {
                   log.debug("Searching for profils with parameters: %s".format(searchParameters))
-                  profilService.search(searchParameters)
-                }
+                  profilService.makeProfil(profilService.search(searchParameters))
+                 //val workerRouter2 = system.actorOf( Props[Pong], name = "workerRouter")
+                  
+              }
             }
           }
         }
@@ -95,11 +109,23 @@ trait RestService extends HttpService with SLF4JLogging {
   protected def handleRequest(ctx: RequestContext, successCode: StatusCode = StatusCodes.OK)(action: => Either[Failure, _]) {
     action match {
       case Right(result: Object) =>
+        
         ctx.complete(successCode, write(result))
       case Left(error: Failure) =>
         ctx.complete(error.getStatusCode, net.liftweb.json.Serialization.write(Map("error" -> error.message)))
       case _ =>
         ctx.complete(StatusCodes.InternalServerError)
     }
+  }
+}
+
+class Pong extends Actor {
+  def receive = {
+    case ProfilWorker =>
+        println("  pong zrób prace")
+        
+    //case StopMessage =>
+      //  println("pong stopped")
+        //context.stop(self)
   }
 }
