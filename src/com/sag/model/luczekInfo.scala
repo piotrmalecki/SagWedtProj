@@ -24,7 +24,7 @@ case class luczekInfo(id: Option[Int], ip: String, kategoria: Option[String], wy
 /**
  * Mapped customers table object.
  */
-object Profiles extends Table[luczekInfo]("luczekInfo") {
+object LuczekInfo extends Table[luczekInfo]("luczekInfo") {
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
 

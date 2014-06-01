@@ -1,7 +1,6 @@
 package com.sag.model
 
 
-import com.sag.config.Configuration
 import com.sag.model._
 import java.sql._
 import scala.Some
@@ -10,7 +9,7 @@ import scala.slick.driver.MySQLDriver.simple._
 import slick.jdbc.meta.MTable
 
 
-class ProfilDAO extends Configuration {
+class ProfilDAO  {
 //  private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format(dbHost, dbPort, dbName),
 //    user = dbUser, password = dbPassword, driver = "com.mysql.jdbc.Driver")
     private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format("188.226.184.116", 3306, "sag-wedt"),
@@ -19,7 +18,22 @@ class ProfilDAO extends Configuration {
   // create tables if not exist
   db.withSession {
     if (MTable.getTables("luczekInfo").list().isEmpty) {
-      Profiles.ddl.create
+      LuczekInfo.ddl.create
+    }
+    if (MTable.getTables("lovedProducts").list().isEmpty) {
+      LovedProducts2.ddl.create
+    }
+    if (MTable.getTables("bestPrices").list().isEmpty) {
+      BestPrices2.ddl.create
+    }
+    if (MTable.getTables("proposedProducts").list().isEmpty) {
+      ProposedProducts2.ddl.create
+    }
+    if (MTable.getTables("bestBrands").list().isEmpty) {
+      BestBrands2.ddl.create
+    }
+    if (MTable.getTables("bestCategories").list().isEmpty) {
+      BestCategories2.ddl.create
     }
   }
     
@@ -32,7 +46,7 @@ class ProfilDAO extends Configuration {
   def create(profil: luczekInfo): Either[Failure, luczekInfo] = {
     try {
       val id = db.withSession {
-        Profiles returning Profiles.id insert profil
+        LuczekInfo returning LuczekInfo.id insert profil
       }
       Right(profil.copy(id = Some(id)))
     } catch {
@@ -50,7 +64,7 @@ class ProfilDAO extends Configuration {
   def get(id: Int): Either[Failure, luczekInfo] = {
     try {
       db.withSession {
-        Profiles.findById(id).firstOption match {
+        LuczekInfo.findById(id).firstOption match {
           case Some(profil: luczekInfo) =>
             Right(profil)
           case _ =>
@@ -69,7 +83,7 @@ class ProfilDAO extends Configuration {
     try {
       db.withSession {
         val query = for {
-          profil <- Profiles if {
+          profil <- LuczekInfo if {
           Seq(
             params.kategoria.map(profil.kategoria is _),
            params.wyszukiwanie.map(profil.wyszukiwanie is _),
