@@ -13,12 +13,12 @@ import slick.jdbc.meta.MTable
 class ProfilDAO extends Configuration {
 //  private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format(dbHost, dbPort, dbName),
 //    user = dbUser, password = dbPassword, driver = "com.mysql.jdbc.Driver")
-    private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format("localhost", 3306, "profilsag"),
-    user = "root", password = "admin", driver = "com.mysql.jdbc.Driver")
+    private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format("188.226.184.116", 3306, "sag-wedt"),
+    user = "sag-wedt-user", password = "elkatomojamilosc", driver = "com.mysql.jdbc.Driver")
 
   // create tables if not exist
   db.withSession {
-    if (MTable.getTables("profiles").list().isEmpty) {
+    if (MTable.getTables("luczekInfo").list().isEmpty) {
       Profiles.ddl.create
     }
   }
@@ -29,12 +29,12 @@ class ProfilDAO extends Configuration {
    * @param profilr entity to
    * @return saved profil entity
    */
-  def create(profil: Profil): Either[Failure, Profil] = {
+  def create(profil: luczekInfo): Either[Failure, luczekInfo] = {
     try {
       val id = db.withSession {
-        Profiles returning Profiles.idProfil insert profil
+        Profiles returning Profiles.id insert profil
       }
-      Right(profil.copy(idProfil = Some(id)))
+      Right(profil.copy(id = Some(id)))
     } catch {
       case e: SQLException =>
         Left(databaseError(e))
@@ -47,11 +47,11 @@ class ProfilDAO extends Configuration {
    * @param id id of the profil to retrieve
    * @return profil entity with specified id
    */
-  def get(id: Int): Either[Failure, Profil] = {
+  def get(id: Int): Either[Failure, luczekInfo] = {
     try {
       db.withSession {
         Profiles.findById(id).firstOption match {
-          case Some(profil: Profil) =>
+          case Some(profil: luczekInfo) =>
             Right(profil)
           case _ =>
             Left(notFoundError(id))
@@ -63,7 +63,7 @@ class ProfilDAO extends Configuration {
     }
   }
   
-  def search(params: SearchModel): Either[Failure,List[Profil]] = {
+  def search(params: SearchModel): Either[Failure,List[luczekInfo]] = {
    // implicit val typeMapper = Profiles.dateTypeMapper
 
     try {
@@ -91,7 +91,7 @@ class ProfilDAO extends Configuration {
     }
   }
   
-  def makeProfil(listProfils:Either[Failure,List[Profil]]): Either[Failure,List[Profil]] ={
+  def makeProfil(listProfils:Either[Failure,List[luczekInfo]]): Either[Failure,List[luczekInfo]] ={
     
    // var newList = List[Profil]
 	// var ll = List[Map[Int,Profil]]()
@@ -114,7 +114,7 @@ catch{
    }
   }
   
-  def getCount(profil: Profil): Int = {
+  def getCount(profil: luczekInfo): Int = {
   var count = profil.czasOgladania.get
   if(profil.czyKupil.get) count = count *4 
   if(profil.czyPrzeczytal.get) count = count *3 

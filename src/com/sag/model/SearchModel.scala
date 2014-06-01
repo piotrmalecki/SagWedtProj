@@ -3,7 +3,7 @@ package com.sag.model
  import java.util.Date
 
 
-//case class SearchModel(idProfil: Option[Int], ip: String, kategoria: Option[String], wyszukiwanie:Option[String],
+//case class SearchModel(id: Option[Int], ip: String, kategoria: Option[String], wyszukiwanie:Option[String],
 //			produkt: Option[String], czasOgladania: Option[Int], dataOgladania: Option[java.util.Date], czyKupil: Option[Boolean],
 //			czyWKarcie: Option[Boolean], czyPrzeczytal: Option[Boolean])
 			

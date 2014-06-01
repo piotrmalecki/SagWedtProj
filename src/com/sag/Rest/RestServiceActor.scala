@@ -61,9 +61,9 @@ trait RestService extends HttpService with SLF4JLogging {
       post {
         entity(Unmarshaller(MediaTypes.`application/json`) {
           case httpEntity: HttpEntity =>
-            read[Profil](httpEntity.asString(HttpCharsets.`UTF-8`))
+            read[luczekInfo](httpEntity.asString(HttpCharsets.`UTF-8`))
         }) {
-          profil: Profil =>
+          profil: luczekInfo =>
             ctx: RequestContext =>
               handleRequest(ctx, StatusCodes.Created) {
                 log.debug("Creating profil: %s".format(profil))
