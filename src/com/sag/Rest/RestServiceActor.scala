@@ -79,9 +79,13 @@ trait RestService extends HttpService with SLF4JLogging {
               ctx: RequestContext =>
                 handleRequest(ctx) {
                   log.debug("Searching for profils with parameters: %s".format(searchParameters))
-                  profilService.makeProfil(profilService.search(searchParameters))
+                 // profilService.makeProfil(profilService.search(searchParameters))
                  //val workerRouter2 = system.actorOf( Props[Pong], name = "workerRouter")
-              }
+              
+                  //profilService.simpleQuery()
+                  profilService.getAllNotebooks()
+              
+                }
             }
           }
         }

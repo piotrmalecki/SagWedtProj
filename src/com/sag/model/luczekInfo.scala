@@ -50,13 +50,6 @@ object LuczekInfo2 extends Table[luczekInfo]("luczekInfo") {
 
   def * = id.? ~ ip ~ kategoria.? ~ wyszukiwanie.? ~ produkt.? ~ czasOgladania.? ~ dataOgladania.? ~ czyKupil.? ~ czyWKarcie.? ~ czyPrzeczytal.? <>(luczekInfo, luczekInfo.unapply _)
 
-  implicit val dateTypeMapper = MappedTypeMapper.base[java.util.Date, java.sql.Date](
-  {
-    ud => new java.sql.Date(ud.getTime)
-  }, {
-    sd => new java.util.Date(sd.getTime)
-  })
-
   val findById = for {
     id <- Parameters[Int]
     c <- this if c.id is id

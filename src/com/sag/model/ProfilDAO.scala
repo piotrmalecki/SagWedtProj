@@ -7,12 +7,15 @@ import scala.Some
 import scala.slick.driver.MySQLDriver.simple.Database.threadLocalSession
 import scala.slick.driver.MySQLDriver.simple._
 import slick.jdbc.meta.MTable
+import scala.slick.jdbc.{GetResult, StaticQuery => Q}
+import Q.interpolation
+import akka.event.slf4j.SLF4JLogging
 
 
 class ProfilDAO  {
 //  private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format(dbHost, dbPort, dbName),
 //    user = dbUser, password = dbPassword, driver = "com.mysql.jdbc.Driver")
-    private val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format("188.226.184.116", 3306, "sag-wedt"),
+    val db = Database.forURL(url = "jdbc:mysql://%s:%d/%s".format("188.226.184.116", 3306, "sag-wedt"),
     user = "sag-wedt-user", password = "elkatomojamilosc", driver = "com.mysql.jdbc.Driver")
 
   // create tables if not exist
@@ -34,6 +37,10 @@ class ProfilDAO  {
     }
     if (MTable.getTables("bestCategories").list().isEmpty) {
       BestCategories2.ddl.create
+    }
+    
+     if (MTable.getTables("cat-notebook").list().isEmpty) {
+      Notebooks.ddl.create
     }
   }
     
@@ -254,7 +261,7 @@ class ProfilDAO  {
         }
         } yield profil
 
-       Right(query.run.toList)
+       Right(query.run.toList.take(5))
       }
     } catch {
       case e: SQLException =>
@@ -277,7 +284,7 @@ class ProfilDAO  {
           }
         } 
         } yield profil
-       Right(query.run.toList)
+       Right(query.run.toList.take(5))
       }
     } catch {
       case e: SQLException =>
@@ -330,7 +337,7 @@ catch{
           }
         } 
         } yield profil
-       Right(query.run.toList)
+       Right(query.run.toList.take(5))
       }
     } catch {
       case e: SQLException =>
@@ -368,7 +375,7 @@ catch{
           }
         } 
         } yield profil
-       Right(query.run.toList)
+       Right(query.run.toList.take(5))
       }
     } catch {
       case e: SQLException =>
@@ -376,6 +383,30 @@ catch{
     }
   }
   
+   def getAllNotebooks(): Either[Failure,List[Notebook]] = {
+    try {
+      db.withSession {
+        val query = for {
+          profil <- Notebooks 
+        } yield profil
+       Right(query.run.toList.take(5))
+      }
+    } catch {
+      case e: SQLException =>
+        Left(databaseError(e))
+    }
+  }
+  def simpleQuery() : Either[Failure, _]  = {
+    try{
+      db.withSession{
+       Right(println((Q.u + "SELECT * FROM `sag-wedt`.`cat-notebook`").execute))
+      }
+    }
+    catch {
+      case e: SQLException =>
+        Left(databaseError(e))
+    }
+  }
    def getAllLovedSorted(params: SearchModel): Either[Failure,List[lovedProducts]] = {
     try {
       db.withSession {
@@ -391,7 +422,7 @@ catch{
           }
         } 
         } yield profil
-       Right(query.run.toList)
+       Right(query.run.toList.take(5))
       }
     } catch {
       case e: SQLException =>

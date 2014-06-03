@@ -1,0 +1,13 @@
+sbt run
+run
+sbt assembly
+assembly
+exit
+run
+assembly
+reset
+sbt sbt-version
+sbt-version
+exit
+run
+assembly
