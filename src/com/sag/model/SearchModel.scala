@@ -7,4 +7,4 @@ package com.sag.model
 //			produkt: Option[String], czasOgladania: Option[Int], dataOgladania: Option[java.util.Date], czyKupil: Option[Boolean],
 //			czyWKarcie: Option[Boolean], czyPrzeczytal: Option[Boolean])
 			
-case class SearchModel( ip: Option[String], kategoria: Option[String], wyszukiwanie:Option[String])
+case class SearchModel( ip: Option[String])

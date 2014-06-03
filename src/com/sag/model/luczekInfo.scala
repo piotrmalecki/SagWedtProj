@@ -19,12 +19,12 @@ import scala.slick.driver.MySQLDriver.simple._
  * @param czyPrzeczytal
  */
 case class luczekInfo(id: Option[Int], ip: String, kategoria: Option[String], wyszukiwanie:Option[String],
-			produkt: Option[String], czasOgladania: Option[Int], dataOgladania: Option[java.util.Date], czyKupil: Option[Boolean],
+			produkt: Option[String], czasOgladania: Option[Int], dataOgladania: Option[Long], czyKupil: Option[Boolean],
 			czyWKarcie: Option[Boolean], czyPrzeczytal: Option[Boolean])
 /**
  * Mapped customers table object.
  */
-object LuczekInfo extends Table[luczekInfo]("luczekInfo") {
+object LuczekInfo2 extends Table[luczekInfo]("luczekInfo") {
 
   def id = column[Int]("id", O.PrimaryKey, O.AutoInc)
 
@@ -38,7 +38,7 @@ object LuczekInfo extends Table[luczekInfo]("luczekInfo") {
   
   def czasOgladania = column[Int]("czasOgladania")
   
-  def dataOgladania = column[java.util.Date]("dataOgladania", O.Nullable)
+  def dataOgladania = column[Long]("dataOgladania", O.Nullable)
   
   def czyKupil = column[Boolean]("czyKupil")
   

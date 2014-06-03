@@ -17,12 +17,17 @@ object BestPrices2 extends Table[bestPrices]("bestPrices") {
   
   def cenaDo = column[Double]("cenaDo")
   
-  def punkty = column[Int]("punkty")
+  def punkty = column[Int]("punkty",O.Nullable)
 
   def * = id.? ~ ip ~ cenaOd ~ cenaDo ~ punkty.? <>(bestPrices, bestPrices.unapply _)
 
   val findById = for {
     id <- Parameters[Int]
     c <- this if c.id is id
+  } yield c
+  
+    val findByIp = for {
+    ip <- Parameters[String]
+    c <- this if c.ip is ip
   } yield c
 }

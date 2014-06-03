@@ -68,12 +68,12 @@ trait RestService extends HttpService with SLF4JLogging {
               handleRequest(ctx, StatusCodes.Created) {
                 log.debug("Creating profil: %s".format(profil))
                 profilService.create(profil)
+                
               }
         }
       } ~
         get {
-        
-          parameters('ip.as[String] ?, 'kategoria.as[String] ?, 'wyszukiwanie.as[String] ?).as(SearchModel) {
+          parameters('ip.as[String] ?).as(SearchModel) {
             
             searchParameters: SearchModel => {
               ctx: RequestContext =>
@@ -95,7 +95,147 @@ trait RestService extends HttpService with SLF4JLogging {
                   profilService.get(profilId)
                 }
             }
-      }
+      }~
+      path("brands"){
+      	post {
+        entity(Unmarshaller(MediaTypes.`application/json`) {
+          case httpEntity: HttpEntity =>
+            read[bestBrands](httpEntity.asString(HttpCharsets.`UTF-8`))
+        }) {
+          profil: bestBrands =>
+            ctx: RequestContext =>
+              handleRequest(ctx, StatusCodes.Created) {
+                log.debug("Creating profil: %s".format(profil))
+                profilService.createBrand(profil)
+                
+              }
+        }
+       }~get {
+          parameters('ip.as[String] ?).as(SearchModel) {
+            
+            searchParameters: SearchModel => {
+              ctx: RequestContext =>
+                handleRequest(ctx) {
+                  log.debug("Searching for profils with parameters: %s".format(searchParameters))
+                  profilService.makePartProfilBrand(profilService.getAllBrandsSorted(searchParameters))
+                 //val workerRouter2 = system.actorOf( Props[Pong], name = "workerRouter")
+              }
+            }
+          }
+        }
+      }~
+       path("categories"){
+      	post {
+        entity(Unmarshaller(MediaTypes.`application/json`) {
+          case httpEntity: HttpEntity =>
+            read[bestCategories](httpEntity.asString(HttpCharsets.`UTF-8`))
+        }) {
+          profil: bestCategories =>
+            ctx: RequestContext =>
+              handleRequest(ctx, StatusCodes.Created) {
+                log.debug("Creating profil: %s".format(profil))
+                profilService.createCategorie(profil)
+                
+              }
+        }
+      }~get {
+          parameters('ip.as[String] ?).as(SearchModel) {
+            
+            searchParameters: SearchModel => {
+              ctx: RequestContext =>
+                handleRequest(ctx) {
+                  log.debug("Searching for profils with parameters: %s".format(searchParameters))
+                  profilService.makePartProfilCategories(profilService.getAllCategoriesSorted(searchParameters))
+                 //val workerRouter2 = system.actorOf( Props[Pong], name = "workerRouter")
+              }
+            }
+          }
+        }
+      }~
+        path("prices"){
+      	post {
+        entity(Unmarshaller(MediaTypes.`application/json`) {
+          case httpEntity: HttpEntity =>
+            read[bestPrices](httpEntity.asString(HttpCharsets.`UTF-8`))
+        }) {
+          profil: bestPrices =>
+            ctx: RequestContext =>
+              handleRequest(ctx, StatusCodes.Created) {
+                log.debug("Creating profil: %s".format(profil))
+                profilService.createPrice(profil)
+              }
+        }
+      }~get {
+          parameters('ip.as[String] ?).as(SearchModel) {
+            
+            searchParameters: SearchModel => {
+              ctx: RequestContext =>
+                handleRequest(ctx) {
+                  log.debug("Searching for profils with parameters: %s".format(searchParameters))
+                  profilService.makePartProfilPrices(profilService.getAllPricesSorted(searchParameters))
+                 //val workerRouter2 = system.actorOf( Props[Pong], name = "workerRouter")
+              }
+            }
+          }
+        }
+      }~
+        path("proposed"){
+      	post {
+        entity(Unmarshaller(MediaTypes.`application/json`) {
+          case httpEntity: HttpEntity =>
+            read[proposedProducts](httpEntity.asString(HttpCharsets.`UTF-8`))
+        }) {
+          profil: proposedProducts =>
+            ctx: RequestContext =>
+              handleRequest(ctx, StatusCodes.Created) {
+                log.debug("Creating profil: %s".format(profil))
+                profilService.createProducts(profil)
+                
+              }
+        }
+       }~
+       get {
+          parameters('ip.as[String] ?).as(SearchModel) {
+            
+            searchParameters: SearchModel => {
+              ctx: RequestContext =>
+                handleRequest(ctx) {
+                  log.debug("Searching for profils with parameters: %s".format(searchParameters))
+                  profilService.makePartProfilPrices(profilService.getAllPricesSorted(searchParameters))
+                 //val workerRouter2 = system.actorOf( Props[Pong], name = "workerRouter")
+              }
+            }
+          }
+        }
+      }~
+        path("loved") {
+      	post {
+        entity(Unmarshaller(MediaTypes.`application/json`) {
+          case httpEntity: HttpEntity =>
+            read[lovedProducts](httpEntity.asString(HttpCharsets.`UTF-8`))
+        }) {
+          profil: lovedProducts =>
+            ctx: RequestContext =>
+              handleRequest(ctx, StatusCodes.Created) {
+                log.debug("Creating profil: %s".format(profil))
+                profilService.createLoved(profil)
+              }
+        }
+      }~
+      get {
+          parameters('ip.as[String] ?).as(SearchModel) {
+            
+            searchParameters: SearchModel => {
+              ctx: RequestContext =>
+                handleRequest(ctx) {
+                  log.debug("Searching for profils with parameters: %s".format(searchParameters))
+                  profilService.makePartProfilLoved(profilService.getAllLovedSorted(searchParameters))
+                 //val workerRouter2 = system.actorOf( Props[Pong], name = "workerRouter")
+              }
+            }
+          }
+        }
+    }
   }
 
   /**
@@ -108,7 +248,6 @@ trait RestService extends HttpService with SLF4JLogging {
   protected def handleRequest(ctx: RequestContext, successCode: StatusCode = StatusCodes.OK)(action: => Either[Failure, _]) {
     action match {
       case Right(result: Object) =>
-        
         ctx.complete(successCode, write(result))
       case Left(error: Failure) =>
         ctx.complete(error.getStatusCode, net.liftweb.json.Serialization.write(Map("error" -> error.message)))

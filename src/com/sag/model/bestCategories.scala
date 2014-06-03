@@ -15,14 +15,19 @@ object BestCategories2 extends Table[bestCategories]("bestCategories") {
   
   def kategoria = column[String]("kategoria")
   
-  def idkategoria = column[Int]("idkategoria")
+  def idkategoria = column[Int]("idkategoria",O.Nullable)
   
-  def punkty = column[Int]("punkty")
+  def punkty = column[Int]("punkty",O.Nullable)
 
   def * = id.? ~ ip ~ kategoria.? ~ idkategoria.? ~ punkty.? <>(bestCategories, bestCategories.unapply _)
 
   val findById = for {
     id <- Parameters[Int]
     c <- this if c.id is id
+  } yield c
+  
+    val findByIp = for {
+    ip <- Parameters[String]
+    c <- this if c.ip is ip
   } yield c
 }
